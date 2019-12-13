@@ -1,0 +1,9 @@
+2D STUFF
+* Structural shit:
+	Good parent-child stuff, objects --> (entity) | (player)
+
+* Rendering shit:
+	Affichage: while looping on map (capture _id --> (object) and 2d render appropriate)
+
+* Player shit:
+	
