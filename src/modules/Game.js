@@ -21,30 +21,51 @@ class Game {
 					stroke: color("red"),
 					fill: color("yellow")
 				},
+				rotation: {
+					speed: 1
+				},
 				radius: 8
 			}
 		}
 		this.cnv;
 		this.map = new GameMap(this.config.map);
 		this.objects = {
-			player: Object,
-			monsters: Object,
-			items: Object
+			player: Object
 		};
 		this.renderer = Object;
-		this.player = Object;
 		// Looping map for Instances of Entities|Objects|Player
 		let TilesList = Object.keys(this.map.tiles);
 		this.map.grid.forEach((rows, y) => {
 			rows.forEach((col, x) => {
 				let tileSize = this.map.config.tileSize;
 				if (!TilesList.includes(col)) {
+					let playerObj = {
+						_id: 'N',
+						x: x * tileSize + tileSize / 2,
+						y: y * tileSize + tileSize / 2,
+						radius: this.config.player.radius,
+						rotation: {
+							angle: Number,
+							speed: this.config.player.rotation.speed
+						}
+					}
 					switch (col) {
 						case "N":
-							console.log(x, y)
-							this.objects.player = new GamePlayer({ _id: 'N', x: x * tileSize + tileSize / 2, y: y * tileSize + tileSize / 2 });
+							playerObj.rotation.angle = Math.PI / 2;
+							this.objects.player = new GamePlayer(playerObj);
 							break;
-
+						case "E":
+							playerObj.rotation.angle = 0.2 * Math.PI;
+							this.objects.player = new GamePlayer(playerObj);
+							break;
+						case "S":
+							playerObj.rotation.angle = (3 * Math.PI) / 2;
+							this.objects.player = new GamePlayer(playerObj);
+							break;
+						case "W":
+							playerObj.rotation.angle = Math.PI;
+							this.objects.player = new GamePlayer(playerObj);
+							break;
 						default:
 							// Create the corresponding entity type
 							break;
@@ -62,16 +83,16 @@ class Game {
 
 	// TODO : Keys
 	keyInputs() {
-		if (keyIsDown(LEFT_ARROW)) {
+		if (keyIsDown(65)) {
 			this.objects.player.moveLeft()
 		}
-		if (keyIsDown(RIGHT_ARROW)) {
+		if (keyIsDown(68)) {
 			this.objects.player.moveRight()
 		}
-		if (keyIsDown(DOWN_ARROW)) {
+		if (keyIsDown(83)) {
 			this.objects.player.moveDown()
 		}
-		if (keyIsDown(UP_ARROW)) {
+		if (keyIsDown(87)) {
 			this.objects.player.moveUp()
 		}
 	}

@@ -19,13 +19,20 @@ class GameRenderer {
 			})
 		})
 
-		doesColide(this.player, null, this.map, this.config);
+		doesColide(this.player, null, this.map);
 
 		// Rendering Player
         ellipseMode(RADIUS);
         stroke(this.config.player.colors.stroke);
         fill(this.config.player.colors.fill);
 		ellipse(this.player.x, this.player.y, this.config.player.radius, this.config.player.radius);
+		stroke("red");
+		line(
+            this.player.x,
+            this.player.y,
+            this.player.x + Math.cos(this.player.rotation.angle) * 30,
+            this.player.y + Math.sin(this.player.rotation.angle) * 30
+        );
 
 		// Redering Entities (Second Layer)
 

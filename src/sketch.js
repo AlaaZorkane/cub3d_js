@@ -13,6 +13,10 @@ function setup() {
 }
 
 function update() {
+	for (const key in game.objects) {
+		const obj = game.objects[key];
+		obj.update(game.map);
+	}
 	game.renderer.render();
 	game.keyInputs();
 }
