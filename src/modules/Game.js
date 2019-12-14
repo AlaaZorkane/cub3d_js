@@ -1,6 +1,52 @@
 class Game {
 	constructor() {
-		this.store;
+		this.store = {
+			projectiles: {
+				'fire_ball': {
+					mana: 10,
+					damage: 10,
+					cooldown: 4,
+					effect: (self) => {
+						console.log("poof! FIRE BALL!")
+					}
+				}
+			},
+			items: {
+				'2': {
+					_id: '2',
+					name: 'hp',
+					color: 'brown',
+					displayName: '+HP',
+					type: 'item',
+					effect: (self) => {
+						console.log("++HP")
+						self.destroy();
+					}
+				},
+				'3': {
+					_id: '3',
+					name: 'mana',
+					color: 'cyan',
+					displayName: '+MANA',
+					type: 'item',
+					effect: (self) => {
+						console.log("++MANA")
+						self.destroy();
+					}
+				},
+				'4': {
+					_id: '4',
+					name: 'trap',
+					color: 'black',
+					displayName: 'trap',
+					type: 'item',
+					effect: (self) => {
+						console.log("TRAP OOPSIE DOOPSIE")
+						self.destroy();
+					}
+				}
+			}
+		};
 		this.config = {
 			general: {
 				width: Number,
@@ -22,15 +68,16 @@ class Game {
 					fill: color("yellow")
 				},
 				rotation: {
-					speed: 1
-				},
-				radius: 8
+					speed: 0.005
+				}
 			}
 		}
 		this.cnv;
 		this.map = new GameMap(this.config.map);
 		this.objects = {
-			player: Object
+			player: Object,
+			entities: [],
+			items: []
 		};
 		this.renderer = Object;
 		// Looping map for Instances of Entities|Objects|Player
@@ -43,11 +90,11 @@ class Game {
 						_id: 'N',
 						x: x * tileSize + tileSize / 2,
 						y: y * tileSize + tileSize / 2,
-						radius: this.config.player.radius,
 						rotation: {
 							angle: Number,
 							speed: this.config.player.rotation.speed
-						}
+						},
+						color: "yellow"
 					}
 					switch (col) {
 						case "N":
@@ -67,7 +114,11 @@ class Game {
 							this.objects.player = new GamePlayer(playerObj);
 							break;
 						default:
-							// Create the corresponding entity type
+							// Items
+							if (col >= 2) {
+								let item = Object.assign({}, this.store.items[col], {x: x * tileSize + tileSize / 2 , y:y * tileSize + tileSize / 2})
+								this.objects.items.push(new GameItem(item))
+							}
 							break;
 					}
 				}
@@ -83,17 +134,45 @@ class Game {
 
 	// TODO : Keys
 	keyInputs() {
+		if (keyIsDown(78))
+			this.objects.player.rotateLeft()
+		if (keyIsDown(77))
+			this.objects.player.rotateRight()
+		// A
+		if (keyIsDown(LEFT_ARROW)) {
+			this.objects.player.moveLeft()
+		}
+		// D
+		if (keyIsDown(RIGHT_ARROW)) {
+			this.objects.player.moveRight()
+		}
+		// S
+		if (keyIsDown(DOWN_ARROW)) {
+			this.objects.player.moveBackward()
+		}
+		// W
+		if (keyIsDown(UP_ARROW)) {
+			this.objects.player.moveForward()
+		}
+		/* if (keyIsDown(LEFT_ARROW))
+			this.objects.player.rotateLeft()
+		if (keyIsDown(RIGHT_ARROW))
+			this.objects.player.rotateRight()
+		// A
 		if (keyIsDown(65)) {
 			this.objects.player.moveLeft()
 		}
+		// D
 		if (keyIsDown(68)) {
 			this.objects.player.moveRight()
 		}
+		// S
 		if (keyIsDown(83)) {
 			this.objects.player.moveDown()
 		}
+		// W
 		if (keyIsDown(87)) {
 			this.objects.player.moveUp()
-		}
+		} */
 	}
 }

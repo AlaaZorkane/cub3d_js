@@ -1,19 +1,48 @@
-function collisionCheckCircleRect(circle, rectangle) {
-	let tile = {
-		x: (rectangle.x * rectangle.tileSize) + (rectangle.tileSize / 2),
-		y: (rectangle.y * rectangle.tileSize) + (rectangle.tileSize / 2),
-		w: rectangle.tileSize,
-		h: rectangle.tileSize
-	}
-	let distX = Math.abs(circle.x - tile.x);
-	let distY = Math.abs(circle.y - tile.y);
-	if (distX > tile.w / 2 + circle.radius || distY > tile.h / 2 + circle.radius)
-		return false;
-	if (distX <= tile.h / 2 || distY <= tile.h / 2)
-		return true;
-	let hypot = (distX - tile.w / 2) * (distX - tile.w / 2) +
-		(distY - tile.h / 2) * (distY - tile.h / 2);
-	return (hypot <= (circle.radius * circle.radius));
+function distancePointLine(A, B, C) {
+	return Math.abs((B.y - A.y) * C.x - (B.x - A.x) * C.y + B.x * A.y - B.y * A.x) / Math.sqrt(Math.pow(B.y - A.y, 2) + Math.pow(B.x - A.x, 2))
+}
+
+function distancePointPoint(A, B) {
+	if (!A || !B) return 10000;
+	let x = B.x - A.x;
+	let y = B.y - A.y;
+	let distance = Math.sqrt(x * x + y * y);
+	return distance;
+}
+
+function fixSeg(num, min, max) {
+	return num <= min ? min : num >= max ? max : num;
+}
+
+function gridToCoord(a, tileSize) {
+	return { x: a.x * tileSize, y: a.y * tileSize }
+}
+
+function coordToGrid(a, tileSize) {
+	return { x: Math.floor(a.x / tileSize), y: Math.floor(a.y / tileSize) };
+}
+
+function closestPointCircleRectange(c, rec, tileSize) {
+	let A = {}
+
+	A.x = fixSeg(c.x, rec.x, rec.x + tileSize);
+	A.y = fixSeg(c.y, rec.y, rec.y + tileSize);
+
+	return A;
+}
+
+function closestTile(source, tiles) {
+	let distances = [];
+	tiles.forEach(tile => {
+		let r_tile = {
+			x: tile.x * tile.tileSize,
+			y: tile.y * tile.tileSize
+		};
+		distances.push(distancePointPoint(r_tile, source));
+	})
+	let smallest_value = Math.min(...distances);
+	let c_tile = distances.indexOf(smallest_value);
+	return tiles[c_tile];
 }
 
 function activeZoneConstructor(initialTile, grid, radiusParam) {
@@ -34,42 +63,37 @@ function activeZoneConstructor(initialTile, grid, radiusParam) {
 	return (activeZone);
 }
 
-function doesColide(source, targets, map) {
-	const { tileSize } = map.config;
-	let collision = {
-		up: [],
-		right: [],
-		down: [],
-		left: []
-	};
-	tilePosition = {
-		x: Math.floor(source.x / tileSize),
-		y: Math.floor(source.y / tileSize)
-	};
-	stroke("#000000");
-	fill(200);
-	rect(tilePosition.x * tileSize, tilePosition.y * tileSize, tileSize, tileSize);
-	const activeZone = activeZoneConstructor({ x: tilePosition.x - 1, y: tilePosition.y - 1, tileSize }, map.grid, 1);
-	for (let index = 0; index < activeZone.length; index++) {
-		const tile = activeZone[index];
-		if (tile.tileType == 1) {
-			if (collisionCheckCircleRect(source, tile)) {
-				fill(color("blue"));
-				rect(tilePosition.x * tileSize, tilePosition.y * tileSize, tileSize, tileSize);
-				// 0 3 6
-				// 1 4 7
-				// 2 5 8
-				//console.log(index)
-				if (index == 0 || index == 3 || index == 6)
-					collision.up.push(tile);
-				if (index == 6 || index == 7 || index == 8)
-					collision.right.push(tile);
-				if (index == 2 || index == 5 || index == 8)
-					collision.down.push(tile);
-				if (index == 0 || index == 1 || index == 2)
-					collision.left.push(tile);
+function doesColide(source, conf) {
+	const map_enabled = conf.map;
+	const targets = conf.targets;
+	const map = game.map;
+	let collision = false;
+	if (map_enabled) {
+		const { tileSize } = map.config;
+		tilePosition = {
+			x: Math.floor(source.x / tileSize),
+			y: Math.floor(source.y / tileSize)
+		};
+		const activeZone = activeZoneConstructor({ x: tilePosition.x - 1, y: tilePosition.y - 1, tileSize }, map.grid, 1);
+		activeZone.forEach(tile => {
+			if (tile.tileType == 1) {
+				let real_rec = gridToCoord(tile, tileSize);
+				let closest_point = closestPointCircleRectange(source, real_rec, tileSize);
+				if (distancePointPoint(closest_point, source) <= source.radius) {
+					collision = true
+				}
 			}
-		}
+		})		
 	}
+	if (targets) {
+		targets.forEach(target => {
+			let distance = distancePointPoint(target, source);
+			if (distance <= source.radius * 2) {
+				collision = true;
+			}
+		})
+	}
+
+
 	return (collision);
 }

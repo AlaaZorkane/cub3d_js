@@ -13,10 +13,9 @@ function setup() {
 }
 
 function update() {
-	for (const key in game.objects) {
-		const obj = game.objects[key];
-		obj.update(game.map);
-	}
+	game.objects.items.forEach(item => {
+		item.pick();
+	})
 	game.renderer.render();
 	game.keyInputs();
 }

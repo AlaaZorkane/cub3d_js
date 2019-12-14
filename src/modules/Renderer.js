@@ -19,23 +19,17 @@ class GameRenderer {
 			})
 		})
 
-		doesColide(this.player, null, this.map);
+		// Rendering the Player
+		game.objects.player.render();
 
-		// Rendering Player
-        ellipseMode(RADIUS);
-        stroke(this.config.player.colors.stroke);
-        fill(this.config.player.colors.fill);
-		ellipse(this.player.x, this.player.y, this.config.player.radius, this.config.player.radius);
-		stroke("red");
-		line(
-            this.player.x,
-            this.player.y,
-            this.player.x + Math.cos(this.player.rotation.angle) * 30,
-            this.player.y + Math.sin(this.player.rotation.angle) * 30
-        );
+		// Rendering the Items
+		game.objects.items.forEach(item => {
+			item.render();
+		})
 
-		// Redering Entities (Second Layer)
-
-		// Redering Roof (Top Layer) [BONUS!!]
+		// for (const key in game.objects) {
+		// 	const obj = game.objects[key];
+		// 	obj.render();
+		// }
 	}
 }

@@ -1,5 +1,3 @@
-rotation with keys and angles
-
 2D STUFF
 * Structural shit:
 	Good parent-child stuff, objects --> (entity) | (player)

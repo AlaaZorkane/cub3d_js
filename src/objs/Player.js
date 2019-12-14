@@ -6,67 +6,73 @@ class GamePlayer extends GameObject {
 			velocity: 1
 		}
 	}
-	moveUp() {
+	extraRender() {
+		stroke("red");
+		line(
+			this.x,
+			this.y,
+			this.x + Math.cos(this.rotation.angle) * 30,
+			this.y + Math.sin(this.rotation.angle) * 30
+		);
+	}
+
+	rotateRight() {
+		this.rotation.angle += this.rotation.speed * deltaTime;
+	}
+
+	rotateLeft() {
+		this.rotation.angle -= this.rotation.speed * deltaTime;
+	}
+
+	moveForward() {
 		const speed = this.config.velocity * this.config.step * deltaTime
-		const newPlayerY = this.y - speed;
-		console.log(this.collision.up)
-		if (this.collision.up.length) {
-			this.collision.up.forEach(obj => {
-				if (obj.tileType == 1) {
-					obj.y *= obj.tileSize;
-					if (newPlayerY < obj.y)
-						this.y = newPlayerY;
-					console.log(obj.y, newPlayerY)
-				}
-			});
-		} else
-			this.y = newPlayerY;
+		const newPlayer = {
+			x: this.x + Math.cos(this.rotation.angle) * speed,
+			y: this.y + Math.sin(this.rotation.angle) * speed,
+			radius: this.radius
+		}
+		if (!doesColide(newPlayer, { map: true })) {
+			this.x = newPlayer.x;
+			this.y = newPlayer.y;
+		}
 	}
 
 	moveRight() {
 		const speed = this.config.velocity * this.config.step * deltaTime
-		const newPlayerX = this.x + speed;
-		if (this.collision.right.length) {
-			this.collision.right.forEach(obj => {
-				if (obj.tileType == 1) {
-					obj.x *= obj.tileSize;
-					if (newPlayerX > obj.x)
-						this.x = newPlayerX;
-					console.log(obj.x, newPlayerX)
-				}
-			});
-		} else
-			this.x = newPlayerX
+		const newPlayer = {
+			x: this.x - Math.cos(this.rotation.angle - PI / 2) * speed,
+			y: this.y - Math.sin(this.rotation.angle - PI / 2) * speed,
+			radius: this.radius
+		}
+		if (!doesColide(newPlayer, { map: true })) {
+			this.x = newPlayer.x;
+			this.y = newPlayer.y;
+		}
 	}
 
-	moveDown() {
+	moveBackward() {
 		const speed = this.config.velocity * this.config.step * deltaTime
-		const newPlayerY = this.y + speed;
-		if (this.collision.down.length) {
-			this.collision.down.forEach(obj => {
-				if (obj.tileType == 1) {
-					obj.y *= obj.tileSize;
-					if (newPlayerY > obj.y)
-						this.y = newPlayerY;
-				}
-			});
-		} else
-			this.y = newPlayerY
+		const newPlayer = {
+			x: this.x - Math.cos(this.rotation.angle) * speed,
+			y: this.y - Math.sin(this.rotation.angle) * speed,
+			radius: this.radius
+		}
+		if (!doesColide(newPlayer, { map: true })) {
+			this.x = newPlayer.x;
+			this.y = newPlayer.y;
+		}
 	}
 
 	moveLeft() {
 		const speed = this.config.velocity * this.config.step * deltaTime
-		const newPlayerX = this.x - speed;
-		if (this.collision.left.length) {
-			this.collision.left.forEach(obj => {
-				if (obj.tileType == 1) {
-					obj.x *= obj.tileSize;
-					if (newPlayerX < obj.x)
-						this.x = newPlayerX;
-					console.log(obj.x, newPlayerX)
-				}
-			});
-		} else
-			this.x = newPlayerX
+		const newPlayer = {
+			x: this.x - Math.cos(this.rotation.angle + PI / 2) * speed,
+			y: this.y - Math.sin(this.rotation.angle + PI / 2) * speed,
+			radius: this.radius
+		}
+		if (!doesColide(newPlayer, { map: true })) {
+			this.x = newPlayer.x;
+			this.y = newPlayer.y;
+		}
 	}
 }
