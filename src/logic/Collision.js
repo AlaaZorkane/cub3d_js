@@ -22,6 +22,10 @@ function coordToGrid(a, tileSize) {
 	return { x: Math.floor(a.x / tileSize), y: Math.floor(a.y / tileSize) };
 }
 
+function pointAngleDistance(A, angle, distance) {
+	return {x: Math.cos(angle) * distance + A.x, y: Math.sin(angle) * distance + A.y}
+}
+
 function closestPointCircleRectange(c, rec, tileSize) {
 	let A = {}
 
@@ -89,7 +93,7 @@ function doesColide(source, conf) {
 		targets.forEach(target => {
 			let distance = distancePointPoint(target, source);
 			if (distance <= source.radius * 2) {
-				collision = true;
+				collision = target;
 			}
 		})
 	}

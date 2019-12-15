@@ -3,11 +3,27 @@ class Game {
 		this.store = {
 			projectiles: {
 				'fire_ball': {
+					_id: 'file_ball',
+					name: 'hp',
+					color: 'brown',
+					displayName: '+HP',
+					velocity: 2,
+					type: 'projectile',
 					mana: 10,
 					damage: 10,
-					cooldown: 4,
-					effect: (self) => {
-						console.log("poof! FIRE BALL!")
+					cooldown: 500,
+					rotation: {
+						angle: 0
+					},
+					effect: (self, trigger) => {
+						if(trigger instanceof GameObject) {
+							if(trigger instanceof GamePlayer) {
+								console.log("BOOM PLAYER")
+							} else {
+								trigger.destroy();
+							}
+						}
+						self.destroy();
 					}
 				}
 			},
@@ -44,6 +60,31 @@ class Game {
 						console.log("TRAP OOPSIE DOOPSIE")
 						self.destroy();
 					}
+				},
+				'5': {
+					_id: '5',
+					name: 'fire_ball',
+					color: 'red',
+					displayName: 'fire_ball',
+					type: 'item',
+					effect: (self) => {
+						console.log("Equiped FireBall")
+						game.objects.player.equipWeapon("fire_ball");
+						self.destroy();
+					}
+				},
+			},
+			entities: {
+				'turret': {
+					_id: 'turret',
+					name: 'turret',
+					color: 'magenta',
+					displayName: 'Turret',
+					type: 'entity',
+					follow_player: false,
+					shoot_player: true,
+					projectile: "fire_ball",
+					health: 100
 				}
 			}
 		};
@@ -77,7 +118,8 @@ class Game {
 		this.objects = {
 			player: Object,
 			entities: [],
-			items: []
+			items: [],
+			projectiles: []
 		};
 		this.renderer = Object;
 		// Looping map for Instances of Entities|Objects|Player
@@ -113,6 +155,13 @@ class Game {
 							playerObj.rotation.angle = Math.PI;
 							this.objects.player = new GamePlayer(playerObj);
 							break;
+						case "M":
+							let store = this.store.entities["turret"];
+							let entity = Object.assign({}, store, {x: x*tileSize + tileSize/2, y: y*tileSize + tileSize/2});
+							let entity_instance = new GameEntity(entity);
+							entity_instance.weapon = this.store.projectiles[store.projectile]
+							console.log(entity_instance)
+							this.objects.entities.push(entity_instance);
 						default:
 							// Items
 							if (col >= 2) {
@@ -153,6 +202,11 @@ class Game {
 		// W
 		if (keyIsDown(UP_ARROW)) {
 			this.objects.player.moveForward()
+		}
+
+		// SPACE
+		if(keyIsDown(SHIFT)) {
+			this.objects.player.shoot();
 		}
 		/* if (keyIsDown(LEFT_ARROW))
 			this.objects.player.rotateLeft()

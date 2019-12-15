@@ -15,6 +15,13 @@ function setup() {
 function update() {
 	game.objects.items.forEach(item => {
 		item.pick();
+	});
+	game.objects.projectiles.forEach(projectile => {
+		projectile.update();
+	})
+
+	game.objects.entities.forEach(entity => {
+		entity.update();
 	})
 	game.renderer.render();
 	game.keyInputs();
